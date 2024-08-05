@@ -8,9 +8,9 @@ L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
 */
 
 // ifr low
-const MAP_TYPE = 'ifrlc';
+//const MAP_TYPE = 'ifrlc';
 // vfr combined
-//const MAP_TYE = 'vfrc';
+const MAP_TYPE = 'vfrc';
 
 L.tileLayer('https://vfrmap.com/20240711/tiles/' + MAP_TYPE  + '/{z}/{y}/{x}.jpg', {
     maxZoom: 11,
