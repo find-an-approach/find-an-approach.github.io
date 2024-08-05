@@ -7,10 +7,16 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
+    <script src="https://cdn.jsdelivr.net/npm/ag-grid-community/dist/ag-grid-community.min.js"></script>
+
     <style>
         body {
             padding: 0;
             margin: 0;
+        }
+
+        #approach-grid {
+            height: 500px;
         }
 
         #map {
@@ -19,10 +25,11 @@
         }
     </style>
 
-    <script src="main.js" defer></script>
+    <script src="js/main.js" defer></script>
 </head>
 
 <body>
+    <div id="approach-grid" class="ag-theme-quartz"></div>
     <div id="map"></div>
 </body>
 
