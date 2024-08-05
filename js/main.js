@@ -26,24 +26,56 @@ function initializeMap() {
     }).addTo(map);
 }
 
+APPROACH_TYPE_TO_COLOR = {
+    "ILS": "text-bg-primary",
+    "LOC": "text-bg-light",
+
+    "RNAV": "text-bg-success",
+    "RNAV (GPS)": "text-bg-success",
+    "RNAV (RNP)": "text-bg-success",
+    "GPS": "text-bg-success",
+}
+
+const formatApproachTypes = (approach_types) => {
+    return approach_types.value.join(', ')
+}
+
+const approachTypeRenderer = (approach_type) => {
+    let html = "";
+    for (const type of approach_type.value) {
+        const color = APPROACH_TYPE_TO_COLOR[type] || "text-bg-light";
+
+        html += `<span class="badge rounded-pill ${color}">${type}</span>`;
+    }
+    return html;
+}
+
 function initializeGrid() {
     // Grid Options: Contains all of the Data Grid configurations
     const gridOptions = {
         pagination: true,
         paginationPageSize: 20,
 
-        // Row Data: The data to be displayed.
         rowData: [
-            { make: "Tesla", model: "Model Y", price: 64950, electric: true },
-            { make: "Ford", model: "F-Series", price: 33850, electric: false },
-            { make: "Toyota", model: "Corolla", price: 29600, electric: false },
+            {
+                "airport": "KPDK", "approach_name": "ILS OR LOC RWY 21L", "types": ["ILS", "LOC"],
+                "has_procedure_turn": false, "has_hold_in_lieu_of_procedure_turn": true, "has_dme_arc": false
+            }
         ],
+
         // Column Definitions: Defines the columns to be displayed.
         columnDefs: [
-            { field: "make", filter: true },
-            { field: "model" },
-            { field: "price" },
-            { field: "electric" }
+            { field: "airport", filter: true, floatingFilter: true },
+            { field: "approach_name", headerName: "Approach Title" },
+            { field: "types", filter: true, cellRenderer: approachTypeRenderer },
+            {
+                headerName: "Approach Features",
+                children: [
+                    { field: "has_procedure_turn", headerTooltip: "Procedure Turn", headerName: "PT", width: 80, "sortable": false },
+                    { field: "has_hold_in_lieu_of_procedure_turn", headerTooltip: "Hold-In-Lieu of Procedure Turn", headerName: "HILPT", width: 80, "sortable": false },
+                    { field: "has_dme_arc", headerTooltip: "DME Arc", headerName: "Arc", width: 80, "sortable": false },
+                ]
+            }
         ]
     };
 
