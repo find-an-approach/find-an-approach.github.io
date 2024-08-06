@@ -20,3 +20,5 @@ Official FAA IFR low tilemap: https://faa.maps.arcgis.com/home/item.html?id=97ab
 pdf.js for geofencing plates? https://mozilla.github.io/pdf.js/getting_started/
 
 Also adobe's pdf embed api, claims to be free https://developer.adobe.com/document-services/apis/pdf-embed/
+
+Use sqlite range requests as data backend? https://phiresky.github.io/blog/2021/hosting-sqlite-databases-on-github-pages/
