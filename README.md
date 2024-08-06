@@ -7,8 +7,9 @@ to present a nice interface to search for approaches from.
 
 ## Development
 
-No node.js or fancy front-end frameworks. [quint](https://qunitjs.com/) for unit
-testing within the browser. JSDoc for some type checking and editor inference.
+`npm install`
+
+`npm run dev`
 
 
 ### Notes
