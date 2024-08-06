@@ -26,7 +26,7 @@ function initializeMap() {
     }).addTo(map);
 }
 
-APPROACH_TYPE_TO_COLOR = {
+const APPROACH_TYPE_TO_COLOR = {
     "ILS": "text-bg-primary",
     "LOC": "text-bg-warning",
 
@@ -34,7 +34,8 @@ APPROACH_TYPE_TO_COLOR = {
     "RNAV (GPS)": "text-bg-success",
     "RNAV (RNP)": "text-bg-success",
     "GPS": "text-bg-success",
-}
+};
+const APPROACH_TYPES = Object.keys(APPROACH_TYPE_TO_COLOR);
 
 const approachTypeRenderer = (cell, formatterParams, onRendered) => {
     let html = "<div class='approach-types'>";
@@ -62,7 +63,7 @@ const approachTitleRenderer = (cell, formatterParams, onRendered) => {
     link.innerHTML = `<i class="bi bi-file-earmark-pdf"></i>`;
 
     const span = document.createElement('span');
-    span.innerText = cell.getValue();
+    span.innerText = cell.getValue() + " ";
     span.appendChild(link);
 
     return span;
@@ -81,15 +82,15 @@ function initializeGrid() {
         layout: "fitColumns",
         data: rowData,
         columns: [
-            { title: "Airport", field: "airport" },
+            { title: "Airport", field: "airport", headerFilter: true, headerFilterPlaceholder: "KATL" },
             { title: "Approach Title", field: "approach_name", formatter: approachTitleRenderer },
-            { title: "Types", field: "types", formatter: approachTypeRenderer },
+            { title: "Types", field: "types", formatter: approachTypeRenderer, headerFilter: true, editor: "list", editorParams: { values: APPROACH_TYPES, multiselect: true } },
             {
                 title: "Approach Features",
                 columns: [
-                    { title: "PT", tooltip: "Procedure Turn", field: "has_procedure_turn", formatter: "tickCross", sorter: "boolean" },
-                    { title: "HILPT", tooltip: "Hold-In-Lieu of Procedure Turn", field: "has_hold_in_lieu_of_procedure_turn", formatter: "tickCross", sorter: "boolean" },
-                    { title: "Arc", tooltip: "DME Arc", field: "has_dme_arc", formatter: "tickCross", sorter: "boolean" }
+                    { title: "PT", tooltip: "Procedure Turn", tooltipHeader: true, field: "has_procedure_turn", formatter: "tickCross", headerSort: false },
+                    { title: "HILPT", tooltip: "Hold-In-Lieu of Procedure Turn", tooltipHeader: true, field: "has_hold_in_lieu_of_procedure_turn", formatter: "tickCross", headerSort: false },
+                    { title: "Arc", tooltip: "DME Arc", field: "has_dme_arc", tooltipHeader: true, formatter: "tickCross", headerSort: false }
                 ]
             }
         ]
