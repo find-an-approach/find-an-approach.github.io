@@ -1,6 +1,8 @@
 import Table from 'react-bootstrap/Table';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
+import Badge from 'react-bootstrap/Badge';
+import Stack from 'react-bootstrap/Stack';
 
 import { createColumnHelper, useReactTable, getCoreRowModel, flexRender } from '@tanstack/react-table'
 import React from 'preact/compat';
@@ -30,10 +32,41 @@ const testData: Approach[] = [
 ];
 
 
-const HeaderWithTooltip = ({text, tooltip}: {text: string, tooltip: string}) => 
+const HeaderWithTooltip = ({ text, tooltip }: { text: string, tooltip: string }) =>
     <OverlayTrigger placement="bottom" overlay={<Tooltip>{tooltip}</Tooltip>}>
         <span>{text}</span>
     </OverlayTrigger>;
+
+
+const FAA_PLATE_URL = "https://aeronav.faa.gov/d-tpp/";
+// TODO: don't hardcode this
+const CYCLE_NUMBER = "2407";
+
+const ApproachTitle = ({title, plate_file}: {title: string, plate_file: string}) => {
+    const plateUrl = `${FAA_PLATE_URL}${CYCLE_NUMBER}/${plate_file}`;
+    return <span>{title} <a target="_blank" href={plateUrl}><i class="bi bi-file-earmark-pdf"></i></a></span>
+}
+
+
+const APPROACH_TYPE_TO_COLOR: {[key: string]: string} = {
+    "ILS": "primary",
+    "LOC": "warning",
+
+    "RNAV": "success",
+    "RNAV (GPS)": "success",
+    "RNAV (RNP)": "success",
+    "GPS": "success",
+}
+
+const ApproachTypes = ({ types }: { types: string[] }) => 
+    <Stack direction="horizontal" gap={1}>
+        {types.map(type => {
+            const color = APPROACH_TYPE_TO_COLOR[type] || "secondary";
+            return <Badge pill bg={color} text={color == "warning" || color == "light" ? "dark" : "light"}>
+                {type}
+            </Badge>;
+        })}
+    </Stack>;
 
 const columnHelper = createColumnHelper<Approach>();
 const columns = [
@@ -41,7 +74,13 @@ const columns = [
         header: 'Airport'
     }),
     columnHelper.accessor('approach_name', {
-        header: 'Approach Title'
+        header: 'Approach Title',
+        // Render the title with a link to the plate file.
+        cell: (cell) => <ApproachTitle title={cell.getValue()} plate_file={cell.row.original.plate_file} />
+    }),
+    columnHelper.accessor('types', {
+        header: 'Types',
+        cell: (cell) => <ApproachTypes types={cell.getValue()} />
     }),
     columnHelper.group({
         header: 'Approach Features',
@@ -69,7 +108,7 @@ export default function ApproachTable() {
     });
 
     return <div style={{ height: "50vh", minHeight: "300px" }}>
-        <Table bordered>
+        <Table hover>
             <thead>
                 {table.getHeaderGroups().map(headerGroup => (
                     <tr key={headerGroup.id}>
