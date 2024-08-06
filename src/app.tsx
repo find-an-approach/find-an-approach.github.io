@@ -1,4 +1,3 @@
-import './app.css'
 import ApproachTable from './ApproachTable'
 import ApproachMap from './ApproachMap'
 
