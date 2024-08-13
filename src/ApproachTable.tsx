@@ -100,23 +100,29 @@ const columns = [
         columns: [
             columnHelper.accessor("has_procedure_turn", {
                 header: "PT",
+                size: 40,
                 Header: <HeaderWithTooltip text="PT" tooltip="Procedure Turn" />,
                 enableSorting: false,
                 filterVariant: "checkbox",
+                muiFilterCheckboxProps: {title: ""},
                 Cell: ({ cell }) => <ProcedureTurnIcon fontSize="large" color={cell.getValue<boolean>() ? "inherit" : "disabled"} />,
             }),
             columnHelper.accessor('has_hold_in_lieu_of_procedure_turn', {
                 header: "HILPT",
+                size: 40,
                 Header: <HeaderWithTooltip text="HILPT" tooltip="Hold-In-Lieu of Procedure Turn" />,
                 enableSorting: false,
                 filterVariant: "checkbox",
+                muiFilterCheckboxProps: {title: ""},
                 Cell: ({ cell }) => <HoldInLieuIcon fontSize="large" color={cell.getValue<boolean>() ? "inherit" : "disabled"} />,
             }),
             columnHelper.accessor('has_dme_arc', {
                 header: "Arc",
+                size: 40,
                 Header: <HeaderWithTooltip text="Arc" tooltip="DME Arc" />,
                 enableSorting: false,
                 filterVariant: "checkbox",
+                muiFilterCheckboxProps: {title: ""},
                 Cell: ({ cell }) => <DmeArcIcon fontSize="large" color={cell.getValue<boolean>() ? "inherit" : "disabled"} />,
             })
         ]
@@ -131,7 +137,7 @@ export default function ApproachTable() {
         data,
         enableTopToolbar: false,
         enableColumnActions: false,
-        initialState: { showColumnFilters: true },
+        initialState: { showColumnFilters: true, density: 'compact' },
         renderDetailPanel: ({ row }) => (
             <h1>Hello {row.original.approach_name}</h1>
         ),
