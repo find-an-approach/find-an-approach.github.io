@@ -44,9 +44,9 @@ const FAA_PLATE_URL = "https://aeronav.faa.gov/d-tpp/";
 // TODO: don't hardcode this
 const CYCLE_NUMBER = "2407";
 
-const ApproachTitle = ({ title, plate_file }: { title: string, plate_file: string }) => {
+const ApproachTitle = ({ title, plate_file }: { title: React.ReactNode, plate_file: string }) => {
     const plateUrl = `${FAA_PLATE_URL}${CYCLE_NUMBER}/${plate_file}`;
-    return <span>{title} <a target="_blank" href={plateUrl}><PictureAsPdfIcon/></a></span>
+    return <span>{title} <a target="_blank" href={plateUrl}><PictureAsPdfIcon /></a></span>
 }
 
 
@@ -83,7 +83,7 @@ const columns = [
                 header: 'Approach Title',
                 enableSorting: false,
                 // Render the title with a link to the plate file.
-                Cell: ({ cell, row }) => <ApproachTitle title={cell.getValue()} plate_file={row.original.plate_file} />
+                Cell: ({ renderedCellValue, row }) => <ApproachTitle title={renderedCellValue} plate_file={row.original.plate_file} />
             }),
             columnHelper.accessor('types', {
                 header: 'Types',
@@ -104,7 +104,7 @@ const columns = [
                 Header: <HeaderWithTooltip text="PT" tooltip="Procedure Turn" />,
                 enableSorting: false,
                 filterVariant: "checkbox",
-                muiFilterCheckboxProps: {title: ""},
+                muiFilterCheckboxProps: { title: "" },
                 Cell: ({ cell }) => <ProcedureTurnIcon fontSize="large" color={cell.getValue<boolean>() ? "inherit" : "disabled"} />,
             }),
             columnHelper.accessor('has_hold_in_lieu_of_procedure_turn', {
@@ -113,7 +113,7 @@ const columns = [
                 Header: <HeaderWithTooltip text="HILPT" tooltip="Hold-In-Lieu of Procedure Turn" />,
                 enableSorting: false,
                 filterVariant: "checkbox",
-                muiFilterCheckboxProps: {title: ""},
+                muiFilterCheckboxProps: { title: "" },
                 Cell: ({ cell }) => <HoldInLieuIcon fontSize="large" color={cell.getValue<boolean>() ? "inherit" : "disabled"} />,
             }),
             columnHelper.accessor('has_dme_arc', {
@@ -122,7 +122,7 @@ const columns = [
                 Header: <HeaderWithTooltip text="Arc" tooltip="DME Arc" />,
                 enableSorting: false,
                 filterVariant: "checkbox",
-                muiFilterCheckboxProps: {title: ""},
+                muiFilterCheckboxProps: { title: "" },
                 Cell: ({ cell }) => <DmeArcIcon fontSize="large" color={cell.getValue<boolean>() ? "inherit" : "disabled"} />,
             })
         ]
