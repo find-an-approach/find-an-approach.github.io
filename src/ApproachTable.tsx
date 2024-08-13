@@ -133,7 +133,7 @@ export default function ApproachTable() {
         enableColumnActions: false,
         initialState: { showColumnFilters: true },
         renderDetailPanel: ({ row }) => (
-            <h1>Hello</h1>
+            <h1>Hello {row.original.approach_name}</h1>
         ),
     });
 
