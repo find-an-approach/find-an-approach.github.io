@@ -78,6 +78,7 @@ const columns = [
         columns: [
             columnHelper.accessor('airport', {
                 header: 'Airport',
+                size: 50,
             }),
             columnHelper.accessor('approach_name', {
                 header: 'Approach Title',
