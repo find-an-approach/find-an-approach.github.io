@@ -9,6 +9,7 @@ import {
 } from 'material-react-table';
 
 import React from 'preact/compat';
+import { DmeArcIcon, HoldInLieuIcon, ProcedureTurnIcon } from './ProcedureIcons';
 
 
 //TData
@@ -76,7 +77,7 @@ const columns = [
         header: 'Approach',
         columns: [
             columnHelper.accessor('airport', {
-                header: 'Airport'
+                header: 'Airport',
             }),
             columnHelper.accessor('approach_name', {
                 header: 'Approach Title',
@@ -102,22 +103,21 @@ const columns = [
                 Header: <HeaderWithTooltip text="PT" tooltip="Procedure Turn" />,
                 enableSorting: false,
                 filterVariant: "checkbox",
-                // TODO: show an icon of PT/HILPT/Arc here
-                Cell: ({ cell }) => <span>{cell.getValue<boolean>() ? "Y" : "N"}</span>,
+                Cell: ({ cell }) => <ProcedureTurnIcon fontSize="large" color={cell.getValue<boolean>() ? "inherit" : "disabled"} />,
             }),
             columnHelper.accessor('has_hold_in_lieu_of_procedure_turn', {
                 header: "HILPT",
                 Header: <HeaderWithTooltip text="HILPT" tooltip="Hold-In-Lieu of Procedure Turn" />,
                 enableSorting: false,
                 filterVariant: "checkbox",
-                Cell: ({ cell }) => <span>{cell.getValue<boolean>() ? "Y" : "N"}</span>,
+                Cell: ({ cell }) => <HoldInLieuIcon fontSize="large" color={cell.getValue<boolean>() ? "inherit" : "disabled"} />,
             }),
             columnHelper.accessor('has_dme_arc', {
                 header: "Arc",
                 Header: <HeaderWithTooltip text="Arc" tooltip="DME Arc" />,
                 enableSorting: false,
                 filterVariant: "checkbox",
-                Cell: ({ cell }) => <span>{cell.getValue<boolean>() ? "Y" : "N"}</span>,
+                Cell: ({ cell }) => <DmeArcIcon fontSize="large" color={cell.getValue<boolean>() ? "inherit" : "disabled"} />,
             })
         ]
     }),
