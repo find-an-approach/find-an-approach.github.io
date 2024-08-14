@@ -193,6 +193,9 @@ const HeroAndForm = (props: {
           <Typography variant="h3" fontWeight={700}>
             Find an Approach
           </Typography>
+          <Typography variant="subtitle2">
+            Find and filter FAA instrument approach procedures.
+          </Typography>
         </Container>
 
         <Container
