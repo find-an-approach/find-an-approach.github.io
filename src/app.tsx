@@ -46,6 +46,7 @@ export function App() {
       );
   }, []);
 
+  const [airportInputState, setAirportInputState] = useState(AirportInputState.Untouched);
   const [airport, setAirport] = useState("");
   const onAirportChange = (airport: string) => {
     setAirport(airport);
@@ -69,11 +70,17 @@ export function App() {
     if (!airportObject) {
       // Nope, just use all the data then.
       setFilteredApproaches(data.approaches);
+
+      if (airportUpper.length == 0) {
+        setAirportInputState(AirportInputState.Untouched);
+      } else {
+        setAirportInputState(AirportInputState.AirportNotFound);
+      }
       return;
     }
 
     // Ok we have a valid airport name!
-    console.log("filter airport", airportObject);
+    //console.log("filter airport", airportObject);
 
     // Compute distances to each airport.
     const distanceToAirports: { [key: string]: number } = {};
@@ -90,8 +97,7 @@ export function App() {
       (a) => distanceToAirports[a.airport] < filterDistance,
     );
     setFilteredApproaches(filtered);
-
-    console.log("filtered", filtered);
+    setAirportInputState(AirportInputState.Valid);
   }, [airport, data, filterDistance]);
 
   // Handle error and loading spinner.
@@ -127,6 +133,7 @@ export function App() {
           <HeroAndForm
             onAirportChange={onAirportChange}
             onDistanceChange={onDistanceChange}
+            airportInputState={airportInputState}
           />
         </Grid>
 
@@ -165,13 +172,26 @@ const Footer = () => {
   );
 };
 
-const HeroAndForm = ({
-  onAirportChange,
-  onDistanceChange,
-}: {
+
+enum AirportInputState {
+  Untouched,
+  Valid,
+  AirportNotFound,
+}
+
+const HeroAndForm = (props: {
   onAirportChange: (airport: string) => void;
   onDistanceChange: (distance: number) => void;
+  airportInputState: AirportInputState
 }) => {
+  // Set color of airport input text field.
+  let airportFieldColor = "primary";
+  if (props.airportInputState == AirportInputState.Valid) {
+    airportFieldColor = "success";
+  } else if (props.airportInputState == AirportInputState.AirportNotFound) {
+    airportFieldColor = "warning"
+  }
+
   return (
     <Box>
       <Grid container>
@@ -198,7 +218,8 @@ const HeroAndForm = ({
               label="Airport"
               placeholder="KATL"
               helperText="Airport to search near"
-              onChange={(e: any) => onAirportChange(e.target.value)}
+              color={airportFieldColor as any}
+              onChange={(e: any) => props.onAirportChange(e.target.value)}
             />
           </FormControl>
           <FormControl sx={{ ml: 1 }} style={{ minWidth: 100 }}>
@@ -208,7 +229,7 @@ const HeroAndForm = ({
               label="Radius"
               autoWidth
               defaultValue={50}
-              onChange={(e: any) => onDistanceChange(e.target.value)}
+              onChange={(e: any) => props.onDistanceChange(e.target.value)}
             >
               <MenuItem value={25}>25NM</MenuItem>
               <MenuItem default value={50}>
