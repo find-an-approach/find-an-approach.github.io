@@ -6,6 +6,7 @@ import {
     MaterialReactTable,
     useMaterialReactTable,
     createMRTColumnHelper,
+    MRT_Row,
 } from 'material-react-table';
 
 import React from 'preact/compat';
@@ -45,6 +46,11 @@ const ApproachTypesCell = ({ types }: { types: ApproachTypeString[] }) =>
             return <Chip size="small" label={type} {...appearance} />
         })}
     </Stack>;
+
+
+const ApproachDetailPanel = (row: MRT_Row<Approach>) => (
+    <h1>Hello {row.original.approach_name}</h1>
+)
 
 
 const columnHelper = createMRTColumnHelper<Approach>();
@@ -109,7 +115,7 @@ const columns = [
 ];
 
 
-export default function ApproachTable() {
+export default function ApproachTable(props: {dttpCycleNumber: string}) {
     const [data, _setData] = React.useState(() => [...testData]);
     const table = useMaterialReactTable({
         columns,
@@ -117,9 +123,7 @@ export default function ApproachTable() {
         enableTopToolbar: false,
         enableColumnActions: false,
         initialState: { showColumnFilters: true, density: 'compact' },
-        renderDetailPanel: ({ row }) => (
-            <h1>Hello {row.original.approach_name}</h1>
-        ),
+        renderDetailPanel: ({ row }) => ApproachDetailPanel(row),
     });
 
     return <MaterialReactTable table={table} />;

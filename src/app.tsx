@@ -1,5 +1,6 @@
 import ApproachTable from './ApproachTable'
 import ApproachMap from './ApproachMap'
+import { AppApproachData, Approach, convertAnalysisToInitialData } from './Approach';
 
 import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
@@ -11,9 +12,96 @@ import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
+import { useEffect, useState } from 'preact/hooks';
+import Alert from '@mui/material/Alert';
+import CircularProgress from '@mui/material/CircularProgress';
+import L from 'leaflet';
+
+
+/** Factor to divide by to convert meters to nautical miles. */
+const METERS_PER_KNOT = 1852;
 
 
 export function App() {
+  const [error, setError] = useState(null);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [data, setData] = useState<AppApproachData | null>(null);
+
+  useEffect(() => {
+    fetch(RELEASE_URL)
+      .then(r => r.json())
+      .then(
+        (r) => {
+          const data = convertAnalysisToInitialData(r);
+          console.log(data);
+          setData(data);
+          setIsLoaded(true);
+        },
+        (error) => {
+          setIsLoaded(true);
+          setError(error);
+        }
+      )
+  }, []);
+
+  const [airport, setAirport] = useState("");
+  const onAirportChange = (airport: string) => {
+    setAirport(airport);
+  };
+
+  const [filterDistance, setFilterDistance] = useState(50);
+  const onDistanceChange = (distance: number) => {
+    setFilterDistance(distance);
+  };
+
+  const [filteredApproaches, setFilteredApproaches] = useState<Approach[]>([]);
+  // If airport or filter distance changes, update the data we're using.
+  useEffect(() => {
+    if (!data) {
+      return;
+    }
+
+    // Check if we the airport name we have is valid.
+    const airportUpper = airport.toUpperCase();
+    const airportObject = data.airports[airportUpper];
+    if (!airportObject) {
+      // Nope, just use all the data then.
+      setFilteredApproaches(data.approaches);
+      return;
+    }
+
+    // Ok we have a valid airport name!
+    console.log("filter airport", airportObject);
+
+    // Compute distances to each airport.
+    const distanceToAirports: {[key: string]: number} = {};
+    for (const airportId of Object.keys(data.airports)) {
+      const distance = L.CRS.Earth.distance(data.airports[airportId].location, airportObject.location);
+      distanceToAirports[airportId] = distance / METERS_PER_KNOT;
+    }
+
+    // Filter to those in range.
+    const filtered = data.approaches.filter(a => distanceToAirports[a.airport] < filterDistance);
+    setFilteredApproaches(filtered);
+
+    console.log("filtered", filtered)
+
+  }, [airport, data, filterDistance])
+
+
+  // Handle error and loading spinner.
+  if (!isLoaded) {
+    return <>
+      <CssBaseline />
+      <CircularProgress />
+    </>
+  } else if (error || !data) {
+    return <>
+      <CssBaseline />
+      <Alert severity="error">Loading failed. {error}</Alert>
+    </>
+  }
+
   return (
     <>
       <CssBaseline />
@@ -24,19 +112,24 @@ export function App() {
         mb: { xs: 4, sm: 6 },
       }}>
         <Grid item xs={12} xl={4}>
-          <Hero />
+          <HeroAndForm onAirportChange={onAirportChange} onDistanceChange={onDistanceChange} />
         </Grid>
 
-        <Grid item xs={12} xl={8} sx={{pr: 2}}>
-          <ApproachTable></ApproachTable>
+        <Grid item xs={12} xl={8} sx={{ pr: 2 }}>
+          <ApproachTable dttpCycleNumber={data.dtpp_cycle_number} />
         </Grid>
       </Grid>
 
-      <ApproachMap></ApproachMap>
+      <ApproachMap dttpCycleNumber={data.dtpp_cycle_number} />
       <Footer />
     </>
   )
 }
+
+
+//const RELEASE_URL = "https://github.com/ammaraskar/faa-instrument-approach-db/releases/latest/download/approaches.json";
+const RELEASE_URL = "/approaches.json";
+
 
 const Footer = () => {
   return <Box
@@ -55,7 +148,7 @@ const Footer = () => {
   </Box>
 }
 
-const Hero = () => {
+const HeroAndForm = ({onAirportChange, onDistanceChange}: {onAirportChange: (airport: string) => void, onDistanceChange: (distance: number) => void}) => {
   return <Box>
     <Grid container>
       <Container
@@ -81,6 +174,7 @@ const Hero = () => {
             label="Airport"
             placeholder="KATL"
             helperText="Airport to search near"
+            onChange={(e: any) => onAirportChange(e.target.value)}
           />
         </FormControl>
         <FormControl sx={{ ml: 1 }} style={{ minWidth: 100 }}>
@@ -90,6 +184,7 @@ const Hero = () => {
             label="Radius"
             autoWidth
             defaultValue={50}
+            onChange={(e: any) => onDistanceChange(e.target.value)}
           >
             <MenuItem value={25}>25NM</MenuItem>
             <MenuItem default value={50}>50NM</MenuItem>
