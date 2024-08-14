@@ -141,8 +141,9 @@ export function App() {
   );
 }
 
-//const RELEASE_URL = "https://github.com/ammaraskar/faa-instrument-approach-db/releases/latest/download/approaches.json";
-const RELEASE_URL = "/approaches.json";
+const RELEASE_URL = import.meta.env.PROD ? 
+  "https://find-an-approach.github.io/data/approaches.json" :
+  "./approaches.json";
 
 const Footer = () => {
   return (
