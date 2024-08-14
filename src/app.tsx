@@ -19,7 +19,9 @@ import MenuItem from "@mui/material/MenuItem";
 import { useEffect, useState } from "preact/hooks";
 import Alert from "@mui/material/Alert";
 import CircularProgress from "@mui/material/CircularProgress";
+import GitHubIcon from '@mui/icons-material/GitHub';
 import L from "leaflet";
+import Chip from "@mui/material/Chip";
 
 /** Factor to divide by to convert meters to nautical miles. */
 const METERS_PER_KNOT = 1852;
@@ -158,26 +160,6 @@ const RELEASE_URL = import.meta.env.PROD ?
   "https://find-an-approach.github.io/data/approaches.json" :
   "./approaches.json";
 
-const Footer = () => {
-  return (
-    <Box
-      sx={{
-        width: "100%",
-        height: "auto",
-        backgroundColor: "info.main",
-        paddingTop: "0.5rem",
-        paddingBottom: "0.5rem",
-      }}
-    >
-      <Container maxWidth="lg">
-        <Grid container direction="column" alignItems="center">
-          <Typography variant="subtitle1">Find an Approach</Typography>
-        </Grid>
-      </Container>
-    </Box>
-  );
-};
-
 
 enum AirportInputState {
   Untouched,
@@ -248,6 +230,37 @@ const HeroAndForm = (props: {
           </FormControl>
         </Container>
       </Grid>
+    </Box>
+  );
+};
+
+const Footer = () => {
+  return (
+    <Box
+      sx={{
+        width: "100%",
+        height: "auto",
+        backgroundColor: "palette.secondary.light",
+        paddingTop: "0.5rem",
+        paddingBottom: "0.5rem",
+      }}
+    >
+      <Container maxWidth="lg">
+        <Grid container direction="column" alignItems="center">
+          <a href="https://github.com/find-an-approach/find-an-approach.github.io">
+            <Chip color="success" icon={<GitHubIcon />} label="Find an Approach" />
+          </a>
+
+          <Typography color="primary" variant="subtitle2">
+            Strictly for informational purposes. Do not use this for navigation and always verify data from official sources.
+          </Typography>
+
+          <Typography variant="caption">
+            Thanks to <a href="https://vfrmap.com/about.html">VFRMap</a> for the high quality tilesets.
+            Also see <a href="https://inthesoup.xyz/">inthesoup.xyz</a> for finding approaches near minimums, another cool instrument approach site.
+          </Typography>
+        </Grid>
+      </Container>
     </Box>
   );
 };
