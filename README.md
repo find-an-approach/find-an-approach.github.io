@@ -11,7 +11,6 @@ to present a nice interface to search for approaches from.
 
 `npm run dev`
 
-
 ### Notes
 
 Official FAA VFR tilemap: https://faa.maps.arcgis.com/home/item.html?id=6ab79dc5de5743adb3e3b6e3c803aa59
