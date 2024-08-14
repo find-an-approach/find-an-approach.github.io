@@ -89,6 +89,7 @@ export function App() {
         data.airports[airportId].location,
         airportObject.location,
       );
+
       distanceToAirports[airportId] = distance / METERS_PER_KNOT;
     }
 
@@ -96,6 +97,11 @@ export function App() {
     const filtered = data.approaches.filter(
       (a) => distanceToAirports[a.airport] < filterDistance,
     );
+    // Add the distance in.
+    filtered.forEach(approach => {
+      approach.distance = distanceToAirports[approach.airport]
+    });
+
     setFilteredApproaches(filtered);
     setAirportInputState(AirportInputState.Valid);
   }, [airport, data, filterDistance]);
@@ -125,7 +131,7 @@ export function App() {
       <Grid
         container
         sx={{
-          mt: { xs: 5, sm: 10 },
+          mt: { xs: 3, sm: 6 },
           mb: { xs: 4, sm: 6 },
         }}
       >
@@ -218,6 +224,7 @@ const HeroAndForm = (props: {
               label="Airport"
               placeholder="KATL"
               helperText="Airport to search near"
+              focused={props.airportInputState == AirportInputState.Valid ? true : undefined}
               color={airportFieldColor as any}
               onChange={(e: any) => props.onAirportChange(e.target.value)}
             />

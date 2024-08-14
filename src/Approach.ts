@@ -44,6 +44,11 @@ export type Approach = {
   has_procedure_turn: boolean;
   has_hold_in_lieu_of_procedure_turn: boolean;
   has_dme_arc: boolean;
+
+  /**
+   * Used when they filter to approaches near an airport for sorting.
+   */
+  distance: number | undefined;
 };
 
 interface AnalysisApproach {
@@ -117,6 +122,7 @@ export const convertAnalysisToInitialData = (
         approach_name: approach.name,
         plate_file: approach.plate_file,
         types: approach.types as ApproachTypeString[],
+        distance: undefined,
         has_procedure_turn: approach.has_procedure_turn,
         has_hold_in_lieu_of_procedure_turn:
           approach.has_hold_in_lieu_of_procedure_turn,

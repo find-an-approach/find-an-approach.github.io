@@ -102,6 +102,18 @@ export default function ApproachTable(props: { dttpCycleNumber: string, data: Ap
           filterSelectOptions: [...ApproachTypes],
           Cell: ({ cell }) => <ApproachTypesCell types={cell.getValue()} />,
         }),
+        columnHelper.accessor("distance", {
+            id: "distance",
+            header: "Distance",
+            size: 40,
+            Cell: ({ cell }) => {
+                const val = cell.getValue<number | undefined>();
+                if (val !== undefined) {
+                    return val.toFixed(1);
+                }
+            },
+            enableColumnFilter: false,
+        }),
       ],
     }),
     columnHelper.group({
@@ -164,7 +176,11 @@ export default function ApproachTable(props: { dttpCycleNumber: string, data: Ap
     data: data,
     enableTopToolbar: false,
     enableColumnActions: false,
-    initialState: { showColumnFilters: true, density: "compact" },
+    initialState: { 
+        showColumnFilters: true,
+        density: "compact",
+        sorting: [{ id: 'distance', desc: false }]
+    },
     renderDetailPanel: ({ row }) => ApproachDetailPanel(row),
   });
 
