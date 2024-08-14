@@ -3,6 +3,11 @@ import Stack from "@mui/material/Stack";
 import Tooltip from "@mui/material/Tooltip";
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import Typography from "@mui/material/Typography";
+import Grid from "@mui/material/Grid";
+import Paper from "@mui/material/Paper";
+import TableContainer from "@mui/material/TableContainer";
+import Table from "@mui/material/Table";
+import TableHead from "@mui/material/TableHead";
 import {
   MaterialReactTable,
   useMaterialReactTable,
@@ -16,9 +21,11 @@ import {
   HoldInLieuIcon,
   ProcedureTurnIcon,
 } from "./ProcedureIcons";
-import { AirportsMap, Approach, ApproachTypes, ApproachTypeString } from "./Approach";
-import Grid from "@mui/material/Grid";
-import Paper from "@mui/material/Paper";
+import { AirportsMap, Approach, ApproachMinimums, ApproachTypes, ApproachTypeString, MinimumsValue } from "./Approach";
+import TableCell from "@mui/material/TableCell";
+import TableBody from "@mui/material/TableBody";
+import TableRow from "@mui/material/TableRow";
+import Alert from "@mui/material/Alert";
 
 
 const HeaderWithTooltip = ({
@@ -68,6 +75,45 @@ const ApproachTypesCell = ({ types }: { types: ApproachTypeString[] }) => (
   </Stack>
 );
 
+const MinimumsCell = (props: {mins: MinimumsValue | "NA" | undefined}) => {
+    const mins = props.mins;
+
+    if (mins === "NA") {
+        return <Alert variant="outlined" severity="error">NA</Alert>
+    } else if (mins && mins.altitude) {
+        return <span>{mins.altitude}</span>
+    }
+
+    return <i>(Parsing error)</i>;
+}
+
+const ApproachMinimumsTable = (props: {minimums: ApproachMinimums[]}) => (
+    <TableContainer component={Paper}>
+        <Table>
+            <TableHead>
+                <TableRow>
+                    <TableCell>Category</TableCell>
+                    <TableCell>A</TableCell>
+                    <TableCell>B</TableCell>
+                    <TableCell>C</TableCell>
+                    <TableCell>D</TableCell>
+                </TableRow>
+            </TableHead>
+            <TableBody>
+                {props.minimums.map((mins, i) => (
+                    <TableRow key={i}>
+                        <TableCell>{mins.minimums_type}</TableCell>
+                        <TableCell><MinimumsCell mins={mins.cat_a} /></TableCell>
+                        <TableCell><MinimumsCell mins={mins.cat_b} /></TableCell>
+                        <TableCell><MinimumsCell mins={mins.cat_c} /></TableCell>
+                        <TableCell><MinimumsCell mins={mins.cat_d} /></TableCell>
+                    </TableRow>
+                ))}
+            </TableBody>
+        </Table>
+    </TableContainer>
+);
+
 const ApproachDetailPanel = (row: MRT_Row<Approach>, airports: AirportsMap) => {
     const approach = row.original;
     const airport = airports[approach.airport];
@@ -81,7 +127,7 @@ const ApproachDetailPanel = (row: MRT_Row<Approach>, airports: AirportsMap) => {
 
             {runway && 
                 <Typography variant="subtitle2">
-                    <Tooltip title="Runway Threshold Elevation">RTE </Tooltip>
+                    <Tooltip title="Runway Threshold Elevation"><span>RTE </span></Tooltip>
                     {runway.threshold_elevation.toFixed(0)}ft MSL
                 </Typography>}
 
@@ -94,9 +140,12 @@ const ApproachDetailPanel = (row: MRT_Row<Approach>, airports: AirportsMap) => {
                 </Paper>}
         </Grid>
 
-        <Grid item xs={7}>
-            <Typography variant="subtitle1">Minimums</Typography>
-        </Grid>
+        {approach.minimums.length > 0 &&
+            <Grid item xs={7}>
+                <Typography variant="subtitle1">Minimums</Typography>
+                <ApproachMinimumsTable minimums={approach.minimums} />
+            </Grid>
+        }
     </Grid>;
 };
 
