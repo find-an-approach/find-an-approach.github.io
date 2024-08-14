@@ -1,4 +1,4 @@
-import Chip from '@mui/material/Chip';
+import Chip, { ChipProps } from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
 import Tooltip from '@mui/material/Tooltip';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
@@ -10,19 +10,8 @@ import {
 
 import React from 'preact/compat';
 import { DmeArcIcon, HoldInLieuIcon, ProcedureTurnIcon } from './ProcedureIcons';
+import { Approach, ApproachTypes, ApproachTypeString } from './Approach';
 
-
-//TData
-type Approach = {
-    airport: string
-    approach_name: string
-    plate_file: string
-    types: string[]
-
-    has_procedure_turn: boolean
-    has_hold_in_lieu_of_procedure_turn: boolean
-    has_dme_arc: boolean
-}
 
 const testData: Approach[] = [
     {
@@ -49,22 +38,11 @@ const ApproachTitle = ({ title, plate_file }: { title: React.ReactNode, plate_fi
     return <span>{title} <a target="_blank" href={plateUrl}><PictureAsPdfIcon /></a></span>
 }
 
-
-const APPROACH_TYPE_TO_COLOR: { [key: string]: string } = {
-    "ILS": "primary",
-    "LOC": "warning",
-
-    "RNAV": "success",
-    "RNAV (GPS)": "success",
-    "RNAV (RNP)": "success",
-    "GPS": "success",
-}
-
-const ApproachTypes = ({ types }: { types: string[] }) =>
+const ApproachTypesCell = ({ types }: { types: ApproachTypeString[] }) =>
     <Stack direction="row" spacing={1}>
         {types.map(type => {
-            const color = APPROACH_TYPE_TO_COLOR[type] || "secondary";
-            return <Chip size="small" label={type} color={color as any} />
+            const appearance = APPROACH_TYPE_TO_APPEARANCE[type] || {};
+            return <Chip size="small" label={type} {...appearance} />
         })}
     </Stack>;
 
@@ -90,8 +68,8 @@ const columns = [
                 header: 'Types',
                 enableSorting: false,
                 filterVariant: 'multi-select',
-                filterSelectOptions: ["ILS", "LOC"],
-                Cell: ({ cell }) => <ApproachTypes types={cell.getValue()} />,
+                filterSelectOptions: [...ApproachTypes],
+                Cell: ({ cell }) => <ApproachTypesCell types={cell.getValue()} />,
             }),
         ]
     }),
@@ -145,4 +123,40 @@ export default function ApproachTable() {
     });
 
     return <MaterialReactTable table={table} />;
+}
+
+
+const APPROACH_TYPE_TO_APPEARANCE: { [key in ApproachTypeString]: ChipProps } = {
+    "ILS": {color: "primary" },
+    "LOC": {color: "warning"},
+    "LOC/DME": {color: "warning", variant: "outlined"},
+    "LOC/NDB": {color: "warning", variant: "outlined"},
+    "LOC Backcourse": {color: "warning", variant: "outlined"},
+    "LOC/DME Backcourse": {color: "warning", variant: "outlined"},
+
+    "LDA": {color: "warning", variant: "outlined"},
+    "LDA/DME": {color: "warning", variant: "outlined"},
+    "SDF": {color: "warning", variant: "outlined"},
+
+    "RNAV": {color: "success"},
+    "RNAV (GPS)": {color: "success"},
+    "RNAV (RNP)": {color: "success"},
+    "GPS": {color: "success"},
+    "GBAS": {color: "success"},
+
+    "TACAN": {color: "info"},
+
+    "NDB": {color: "info"},
+    "NDB/DME": {color: "info"},
+    "VOR": {color: "info"},
+    "VOR/DME": {color: "info"},
+
+    "High Altitude ILS": {color: "secondary" },
+    "High Altitude LOC": {color: "secondary" },
+    "High Altitude LOC/DME": {color: "secondary" },
+    "High Altitude LOC/DME Backcourse": {color: "secondary" },
+    "High Altitude RNAV (GPS)": {color: "secondary" },
+    "High Altitude VOR": {color: "secondary" },
+    "High Altitude VOR/DME": {color: "secondary" },
+    "High Altitude TACAN": {color: "secondary" },
 }
