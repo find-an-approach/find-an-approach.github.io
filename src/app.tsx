@@ -146,7 +146,7 @@ export function App() {
         </Grid>
 
         <Grid item xs={12} xl={8} sx={{ pr: 2 }}>
-          <ApproachTable data={filteredApproaches} dttpCycleNumber={data.dtpp_cycle_number} />
+          <ApproachTable data={filteredApproaches} dttpCycleNumber={data.dtpp_cycle_number} airports={data.airports} />
         </Grid>
       </Grid>
 

@@ -2,6 +2,7 @@ import Chip, { ChipProps } from "@mui/material/Chip";
 import Stack from "@mui/material/Stack";
 import Tooltip from "@mui/material/Tooltip";
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
+import Typography from "@mui/material/Typography";
 import {
   MaterialReactTable,
   useMaterialReactTable,
@@ -15,7 +16,9 @@ import {
   HoldInLieuIcon,
   ProcedureTurnIcon,
 } from "./ProcedureIcons";
-import { Approach, ApproachTypes, ApproachTypeString } from "./Approach";
+import { AirportsMap, Approach, ApproachTypes, ApproachTypeString } from "./Approach";
+import Grid from "@mui/material/Grid";
+import Paper from "@mui/material/Paper";
 
 
 const HeaderWithTooltip = ({
@@ -65,13 +68,41 @@ const ApproachTypesCell = ({ types }: { types: ApproachTypeString[] }) => (
   </Stack>
 );
 
-const ApproachDetailPanel = (row: MRT_Row<Approach>) => (
-  <h1>Hello {row.original.approach_name}</h1>
-);
+const ApproachDetailPanel = (row: MRT_Row<Approach>, airports: AirportsMap) => {
+    const approach = row.original;
+    const airport = airports[approach.airport];
+
+    const runway = airport.runways.filter(r => r.name == approach.runway).shift();
+
+    return <Grid container spacing={2}>
+        <Grid item xs={5}>
+            <Typography variant="h4">{approach.approach_name}</Typography>
+            <Typography variant="subtitle1">{airport.name} ({approach.airport})</Typography>
+
+            {runway && 
+                <Typography variant="subtitle2">
+                    <Tooltip title="Runway Threshold Elevation">RTE </Tooltip>
+                    {runway.threshold_elevation.toFixed(0)}ft MSL
+                </Typography>}
+
+            {approach.text_comments.length > 0 &&
+                <Paper sx={{p: 2, m: 2}} elevation={3}>
+                    <Typography variant="subtitle1">Comments</Typography>
+                    <Typography variant="body2">
+                        {approach.text_comments}
+                    </Typography>
+                </Paper>}
+        </Grid>
+
+        <Grid item xs={7}>
+            <Typography variant="subtitle1">Minimums</Typography>
+        </Grid>
+    </Grid>;
+};
 
 const columnHelper = createMRTColumnHelper<Approach>();
 
-export default function ApproachTable(props: { dttpCycleNumber: string, data: Approach[] }) {
+export default function ApproachTable(props: { dttpCycleNumber: string, data: Approach[], airports: AirportsMap }) {
   const data = useMemo(() => props.data, [props.data]);
 
   const columns = useMemo(() => [
@@ -109,7 +140,7 @@ export default function ApproachTable(props: { dttpCycleNumber: string, data: Ap
             Cell: ({ cell }) => {
                 const val = cell.getValue<number | undefined>();
                 if (val !== undefined) {
-                    return val.toFixed(1);
+                    return `${val.toFixed(1)} NM`;
                 }
             },
             enableColumnFilter: false,
@@ -181,7 +212,7 @@ export default function ApproachTable(props: { dttpCycleNumber: string, data: Ap
         density: "compact",
         sorting: [{ id: 'distance', desc: false }]
     },
-    renderDetailPanel: ({ row }) => ApproachDetailPanel(row),
+    renderDetailPanel: ({ row }) => ApproachDetailPanel(row, props.airports),
   });
 
   return <MaterialReactTable table={table} />;

@@ -41,6 +41,9 @@ export type Approach = {
   plate_file: string;
   types: string[];
 
+  text_comments: string;
+  runway?: string;
+
   has_procedure_turn: boolean;
   has_hold_in_lieu_of_procedure_turn: boolean;
   has_dme_arc: boolean;
@@ -93,13 +96,15 @@ interface AnalysisResult {
   airports: { [key: string]: Airport };
 }
 
+export type AirportsMap = { [key: string]: AppAirportData };
+
 /** Unfiltered approach data converted to the most convenient js formats for
  * the app. */
 export interface AppApproachData {
   dtpp_cycle_number: string;
   approaches: Approach[];
 
-  airports: { [key: string]: AppAirportData };
+  airports: AirportsMap;
 }
 
 type LatLngType = { lat: number; lng: number };
@@ -107,6 +112,7 @@ type LatLngType = { lat: number; lng: number };
 interface AppAirportData {
   location: LatLngType;
   name: string;
+  runways: Runway[]
 }
 
 export const convertAnalysisToInitialData = (
@@ -122,17 +128,23 @@ export const convertAnalysisToInitialData = (
         approach_name: approach.name,
         plate_file: approach.plate_file,
         types: approach.types as ApproachTypeString[],
-        distance: undefined,
+        runway: approach.runway,
+
+        text_comments: approach.comments.text_comments,
+
         has_procedure_turn: approach.has_procedure_turn,
         has_hold_in_lieu_of_procedure_turn:
           approach.has_hold_in_lieu_of_procedure_turn,
         has_dme_arc: approach.has_dme_arc,
+
+        distance: undefined,
       });
     }
 
     airports[airport.id] = {
       name: airport.name,
       location: convertLatitudeLongitude(airport),
+      runways: airport.runways,
     };
   }
 
