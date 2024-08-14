@@ -9,7 +9,7 @@ import {
   MRT_Row,
 } from "material-react-table";
 
-import React from "preact/compat";
+import React, { useMemo } from "preact/compat";
 import {
   DmeArcIcon,
   HoldInLieuIcon,
@@ -17,17 +17,6 @@ import {
 } from "./ProcedureIcons";
 import { Approach, ApproachTypes, ApproachTypeString } from "./Approach";
 
-const testData: Approach[] = [
-  {
-    airport: "KPDK",
-    approach_name: "ILS OR LOC RWY 21L",
-    plate_file: "00469IL21L.PDF",
-    types: ["ILS", "LOC"],
-    has_procedure_turn: false,
-    has_hold_in_lieu_of_procedure_turn: true,
-    has_dme_arc: false,
-  },
-];
 
 const HeaderWithTooltip = ({
   text,
@@ -82,10 +71,10 @@ const ApproachDetailPanel = (row: MRT_Row<Approach>) => (
 
 const columnHelper = createMRTColumnHelper<Approach>();
 
-export default function ApproachTable(props: { dttpCycleNumber: string }) {
-  const [data, _setData] = React.useState(() => [...testData]);
+export default function ApproachTable(props: { dttpCycleNumber: string, data: Approach[] }) {
+  const data = useMemo(() => props.data, [props.data]);
 
-  const columns = [
+  const columns = useMemo(() => [
     columnHelper.group({
       id: "approach",
       header: "Approach",
@@ -128,7 +117,7 @@ export default function ApproachTable(props: { dttpCycleNumber: string }) {
           muiFilterCheckboxProps: { title: "" },
           Cell: ({ cell }) => (
             <ProcedureTurnIcon
-              fontSize="large"
+              fontSize="medium"
               color={cell.getValue<boolean>() ? "inherit" : "disabled"}
             />
           ),
@@ -147,7 +136,7 @@ export default function ApproachTable(props: { dttpCycleNumber: string }) {
           muiFilterCheckboxProps: { title: "" },
           Cell: ({ cell }) => (
             <HoldInLieuIcon
-              fontSize="large"
+              fontSize="medium"
               color={cell.getValue<boolean>() ? "inherit" : "disabled"}
             />
           ),
@@ -161,18 +150,18 @@ export default function ApproachTable(props: { dttpCycleNumber: string }) {
           muiFilterCheckboxProps: { title: "" },
           Cell: ({ cell }) => (
             <DmeArcIcon
-              fontSize="large"
+              fontSize="medium"
               color={cell.getValue<boolean>() ? "inherit" : "disabled"}
             />
           ),
         }),
       ],
     }),
-  ];
+  ], [props.dttpCycleNumber]);
 
   const table = useMaterialReactTable({
     columns,
-    data,
+    data: data,
     enableTopToolbar: false,
     enableColumnActions: false,
     initialState: { showColumnFilters: true, density: "compact" },
