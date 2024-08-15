@@ -110,7 +110,10 @@ export function App() {
       approach.distance = distanceToAirports[approach.airport]
     });
 
-    setApproachTypes(Array.from(newApproachTypes));
+    const newApproachTypesArray = Array.from(newApproachTypes);
+    newApproachTypesArray.sort();
+
+    setApproachTypes(newApproachTypesArray);
     setFilteredApproaches(filtered);
     setAirportInputState(AirportInputState.Valid);
   }, [airport, data, filterDistance]);
