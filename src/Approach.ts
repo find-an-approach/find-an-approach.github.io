@@ -127,7 +127,7 @@ export interface AppApproachData {
 
 type LatLngType = { lat: number; lng: number };
 
-interface AppAirportData {
+export interface AppAirportData {
   location: LatLngType;
   name: string;
   runways: Runway[]

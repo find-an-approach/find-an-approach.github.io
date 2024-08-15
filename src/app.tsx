@@ -1,6 +1,7 @@
 import ApproachTable from "./ApproachTable";
-import ApproachMap from "./ApproachMap";
+import ApproachMap, { METERS_PER_KNOT } from "./ApproachMap";
 import {
+  AppAirportData,
   AppApproachData,
   Approach,
   ApproachTypes,
@@ -30,8 +31,6 @@ import Link from "@mui/material/Link";
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
 
-/** Factor to divide by to convert meters to nautical miles. */
-const METERS_PER_KNOT = 1852;
 
 // Detect system dark-mode once.
 let defaultTheme: PaletteMode = 'light';
@@ -71,6 +70,8 @@ export function App() {
     setFilterDistance(distance);
   };
 
+  const [filteredToAirport, setFilteredToAirport] = useState<AppAirportData | null>(null);
+
   const [approachTypes, setApproachTypes] = useState<string[]>([...ApproachTypes]);
   const [filteredApproaches, setFilteredApproaches] = useState<Approach[]>([]);
   // If airport or filter distance changes, update the data we're using.
@@ -91,10 +92,12 @@ export function App() {
       } else {
         setAirportInputState(AirportInputState.AirportNotFound);
       }
+      setFilteredToAirport(null);
       return;
     }
 
     // Ok we have a valid airport name!
+    setFilteredToAirport(airportObject);
     //console.log("filter airport", airportObject);
 
     // Compute distances to each airport.
@@ -194,7 +197,13 @@ export function App() {
         </Grid>
       </Grid>
 
-      <ApproachMap dttpCycleNumber={data.dtpp_cycle_number} />
+      <ApproachMap
+        filterAirport={filteredToAirport}
+        filterDistance={filterDistance}
+        
+        data={filteredApproaches}
+        airports={data.airports}
+        dttpCycleNumber={data.dtpp_cycle_number} />
       <Footer />
       </>
     </ThemeProvider>
