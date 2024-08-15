@@ -21,7 +21,7 @@ import {
   HoldInLieuIcon,
   ProcedureTurnIcon,
 } from "./ProcedureIcons";
-import { AirportsMap, Approach, ApproachMinimums, ApproachTypes, ApproachTypeString, MinimumsValue } from "./Approach";
+import { AirportsMap, Approach, ApproachMinimums, ApproachTypeString, MinimumsValue } from "./Approach";
 import TableCell from "@mui/material/TableCell";
 import TableBody from "@mui/material/TableBody";
 import TableRow from "@mui/material/TableRow";
@@ -81,7 +81,7 @@ const MinimumsCell = (props: {mins: MinimumsValue | "NA" | undefined}) => {
     if (mins === "NA") {
         return <Alert variant="outlined" severity="error">NA</Alert>
     } else if (mins && mins.altitude) {
-        return <span>{mins.altitude}</span>
+        return <span>{mins.altitude}ft</span>
     }
 
     return <i>(Parsing error)</i>;
@@ -151,7 +151,7 @@ const ApproachDetailPanel = (row: MRT_Row<Approach>, airports: AirportsMap) => {
 
 const columnHelper = createMRTColumnHelper<Approach>();
 
-export default function ApproachTable(props: { dttpCycleNumber: string, data: Approach[], airports: AirportsMap }) {
+export default function ApproachTable(props: { dttpCycleNumber: string, data: Approach[], approachTypes: string[], airports: AirportsMap }) {
   const data = useMemo(() => props.data, [props.data]);
 
   const columns = useMemo(() => [
@@ -162,6 +162,9 @@ export default function ApproachTable(props: { dttpCycleNumber: string, data: Ap
         columnHelper.accessor("airport", {
           header: "Airport",
           size: 50,
+          muiFilterTextFieldProps: {
+            sx: {minWidth: '50px'}
+          },
         }),
         columnHelper.accessor("approach_name", {
           header: "Approach Title",
@@ -179,7 +182,7 @@ export default function ApproachTable(props: { dttpCycleNumber: string, data: Ap
           header: "Types",
           enableSorting: false,
           filterVariant: "multi-select",
-          filterSelectOptions: [...ApproachTypes],
+          filterSelectOptions: props.approachTypes,
           Cell: ({ cell }) => <ApproachTypesCell types={cell.getValue()} />,
         }),
         columnHelper.accessor("distance", {
@@ -249,7 +252,7 @@ export default function ApproachTable(props: { dttpCycleNumber: string, data: Ap
         }),
       ],
     }),
-  ], [props.dttpCycleNumber]);
+  ], [props.dttpCycleNumber, props.approachTypes]);
 
   const table = useMaterialReactTable({
     columns,

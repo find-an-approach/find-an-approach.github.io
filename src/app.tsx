@@ -3,6 +3,7 @@ import ApproachMap from "./ApproachMap";
 import {
   AppApproachData,
   Approach,
+  ApproachTypes,
   convertAnalysisToInitialData,
 } from "./Approach";
 
@@ -37,7 +38,6 @@ export function App() {
       .then(
         (r) => {
           const data = convertAnalysisToInitialData(r);
-          console.log(data);
           setData(data);
           setIsLoaded(true);
         },
@@ -59,6 +59,7 @@ export function App() {
     setFilterDistance(distance);
   };
 
+  const [approachTypes, setApproachTypes] = useState<string[]>([...ApproachTypes]);
   const [filteredApproaches, setFilteredApproaches] = useState<Approach[]>([]);
   // If airport or filter distance changes, update the data we're using.
   useEffect(() => {
@@ -95,15 +96,21 @@ export function App() {
       distanceToAirports[airportId] = distance / METERS_PER_KNOT;
     }
 
+    // Create a set of all approach types from the filtered set. This is used
+    // to populate the type filter.
+    const newApproachTypes = new Set<string>();
+
     // Filter to those in range.
     const filtered = data.approaches.filter(
       (a) => distanceToAirports[a.airport] < filterDistance,
     );
     // Add the distance in.
     filtered.forEach(approach => {
+      approach.types.forEach(t => newApproachTypes.add(t));
       approach.distance = distanceToAirports[approach.airport]
     });
 
+    setApproachTypes(Array.from(newApproachTypes));
     setFilteredApproaches(filtered);
     setAirportInputState(AirportInputState.Valid);
   }, [airport, data, filterDistance]);
@@ -146,7 +153,11 @@ export function App() {
         </Grid>
 
         <Grid item xs={12} xl={8} sx={{ pr: 2 }}>
-          <ApproachTable data={filteredApproaches} dttpCycleNumber={data.dtpp_cycle_number} airports={data.airports} />
+          <ApproachTable 
+            data={filteredApproaches}
+            approachTypes={approachTypes}
+            dttpCycleNumber={data.dtpp_cycle_number}
+            airports={data.airports} />
         </Grid>
       </Grid>
 
@@ -229,6 +240,7 @@ const HeroAndForm = (props: {
               </MenuItem>
               <MenuItem value={100}>100NM</MenuItem>
               <MenuItem value={150}>150NM</MenuItem>
+              <MenuItem value={250}>250NM</MenuItem>
             </Select>
           </FormControl>
         </Container>
