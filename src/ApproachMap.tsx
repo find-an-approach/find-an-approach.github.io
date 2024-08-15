@@ -1,7 +1,8 @@
 import { Circle, MapContainer, TileLayer } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { AirportsMap, AppAirportData, Approach } from "./Approach";
-import { useMemo } from "preact/hooks";
+import { useMemo, useState } from "preact/hooks";
+import { Map } from "leaflet";
 
 /** Factor to divide by to convert meters to nautical miles. */
 export const METERS_PER_KNOT = 1852;
@@ -24,6 +25,15 @@ export default function ApproachMap(props: {
     [props.dttpCycleNumber],
   );
 
+  const [map, setMap] = useState<Map | null>(null);
+
+  useMemo(() => {
+    if (!props.filterAirport || !map) {
+        return;
+    }
+    map.setView(props.filterAirport.location, 10);
+  }, [props.filterAirport, map])
+
   // Check if there is an airport we are filtering to.
   let filterCircle = <></>;
   if (props.filterAirport) {
@@ -36,9 +46,10 @@ export default function ApproachMap(props: {
 
   return (
     <MapContainer
-      style={{ height: "60vh", minHeight: "300px" }}
+      style={{ height: "65vh", minHeight: "300px" }}
       center={DEFAULT_MAP_LOCATION}
       zoom={10}
+      ref={setMap}
     >
       <TileLayer
         attribution='&copy; <a href="https://vfrmap.com/about.html">VFRMap</a>'
