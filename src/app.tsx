@@ -17,15 +17,27 @@ import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
-import { useEffect, useState } from "preact/hooks";
+import { useEffect, useMemo, useState } from "preact/hooks";
 import Alert from "@mui/material/Alert";
 import CircularProgress from "@mui/material/CircularProgress";
 import GitHubIcon from '@mui/icons-material/GitHub';
 import L from "leaflet";
 import Chip from "@mui/material/Chip";
+import { createTheme, ThemeProvider, useTheme } from '@mui/material/styles';
+import { PaletteMode } from "@mui/material";
+import IconButton from "@mui/material/IconButton";
+import Link from "@mui/material/Link";
+import Brightness4Icon from '@mui/icons-material/Brightness4';
+import Brightness7Icon from '@mui/icons-material/Brightness7';
 
 /** Factor to divide by to convert meters to nautical miles. */
 const METERS_PER_KNOT = 1852;
+
+// Detect system dark-mode once.
+let defaultTheme: PaletteMode = 'light';
+if (window && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+  defaultTheme = 'dark';
+}
 
 export function App() {
   const [error, setError] = useState(null);
@@ -118,6 +130,18 @@ export function App() {
     setAirportInputState(AirportInputState.Valid);
   }, [airport, data, filterDistance]);
 
+  const [mode, setMode] = useState<PaletteMode>(defaultTheme);
+  const onDarkModeChange = () => setMode(mode == 'light' ? 'dark' : 'light');
+  const theme = useMemo(
+    () =>
+      createTheme({
+        palette: {
+          mode: mode,
+        }
+      }),
+    [mode]
+  );
+
   // Handle error and loading spinner.
   if (!isLoaded) {
     return (
@@ -136,7 +160,12 @@ export function App() {
   }
 
   return (
-    <>
+    // Working around a typescript bug with mui ThemeProvider.
+    // https://github.com/mui/material-ui/issues/32660
+    // @ts-ignore
+    <ThemeProvider theme={theme}>
+      {/* @ts-ignore */}
+      <>
       <CssBaseline />
 
       {/* Hero and table in one grid */}
@@ -151,6 +180,7 @@ export function App() {
           <HeroAndForm
             onAirportChange={onAirportChange}
             onDistanceChange={onDistanceChange}
+            onDarkModeChange={onDarkModeChange}
             airportInputState={airportInputState}
           />
         </Grid>
@@ -166,7 +196,8 @@ export function App() {
 
       <ApproachMap dttpCycleNumber={data.dtpp_cycle_number} />
       <Footer />
-    </>
+      </>
+    </ThemeProvider>
   );
 }
 
@@ -184,8 +215,11 @@ enum AirportInputState {
 const HeroAndForm = (props: {
   onAirportChange: (airport: string) => void;
   onDistanceChange: (distance: number) => void;
+  onDarkModeChange: () => void;
   airportInputState: AirportInputState
 }) => {
+  const theme = useTheme();
+  
   // Set color of airport input text field.
   let airportFieldColor = "primary";
   if (props.airportInputState == AirportInputState.Valid) {
@@ -246,6 +280,12 @@ const HeroAndForm = (props: {
               <MenuItem value={250}>250NM</MenuItem>
             </Select>
           </FormControl>
+
+          {/* Dark mode switch */}
+          <IconButton sx={{ ml: 1 }} onClick={() => props.onDarkModeChange()} color="inherit">
+            {theme.palette.mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
+          </IconButton>
+
         </Container>
       </Grid>
     </Box>
@@ -274,8 +314,8 @@ const Footer = () => {
           </Typography>
 
           <Typography variant="caption">
-            Thanks to <a href="https://vfrmap.com/about.html">VFRMap</a> for the high quality tilesets.
-            Also see <a href="https://inthesoup.xyz/">inthesoup.xyz</a> for finding approaches near minimums, another cool instrument approach site.
+            Thanks to <Link href="https://vfrmap.com/about.html">VFRMap</Link> for the high quality tilesets.
+            Also see <Link href="https://inthesoup.xyz/">inthesoup.xyz</Link> for finding approaches near minimums, another cool instrument approach site.
           </Typography>
         </Grid>
       </Container>

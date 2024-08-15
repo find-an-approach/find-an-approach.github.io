@@ -26,6 +26,7 @@ import TableCell from "@mui/material/TableCell";
 import TableBody from "@mui/material/TableBody";
 import TableRow from "@mui/material/TableRow";
 import Alert from "@mui/material/Alert";
+import Link from "@mui/material/Link";
 
 
 const HeaderWithTooltip = ({
@@ -59,9 +60,9 @@ const ApproachTitle = ({
   return (
     <span>
       {title}{" "}
-      <a target="_blank" href={plateUrl}>
+      <Link target="_blank" href={plateUrl}>
         <PictureAsPdfIcon />
-      </a>
+      </Link>
     </span>
   );
 };
