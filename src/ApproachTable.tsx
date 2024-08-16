@@ -321,7 +321,7 @@ export default function ApproachTable(props: {
   return <MaterialReactTable table={table} />;
 }
 
-const APPROACH_TYPE_TO_APPEARANCE: { [key in ApproachTypeString]: ChipProps } =
+export const APPROACH_TYPE_TO_APPEARANCE: { [key in ApproachTypeString]: ChipProps } =
   {
     ILS: { color: "primary" },
     LOC: { color: "warning" },
