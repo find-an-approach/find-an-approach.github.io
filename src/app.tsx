@@ -291,7 +291,7 @@ const HeroAndForm = (props: {
           </FormControl>
 
           {/* Dark mode switch */}
-          <IconButton sx={{ ml: 1 }} onClick={() => props.onDarkModeChange()} color="inherit">
+          <IconButton sx={{ ml: 1 }} onClick={() => props.onDarkModeChange()} color="inherit" title="Dark/Light mode">
             {theme.palette.mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
           </IconButton>
 

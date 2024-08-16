@@ -15,7 +15,7 @@ import {
   MRT_Row,
 } from "material-react-table";
 
-import React, { useMemo } from "preact/compat";
+import React, { useEffect, useMemo, useState } from "preact/compat";
 import {
   DmeArcIcon,
   HoldInLieuIcon,
@@ -27,6 +27,7 @@ import TableBody from "@mui/material/TableBody";
 import TableRow from "@mui/material/TableRow";
 import Alert from "@mui/material/Alert";
 import Link from "@mui/material/Link";
+import { ColumnFiltersState } from "@tanstack/table-core";
 
 
 const HeaderWithTooltip = ({
@@ -255,6 +256,10 @@ export default function ApproachTable(props: { dttpCycleNumber: string, data: Ap
     }),
   ], [props.dttpCycleNumber, props.approachTypes]);
 
+  // Manual state management over column filtering so we can add a callback for
+  // it.
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+
   const table = useMaterialReactTable({
     columns,
     data: data,
@@ -266,7 +271,17 @@ export default function ApproachTable(props: { dttpCycleNumber: string, data: Ap
         sorting: [{ id: 'distance', desc: false }]
     },
     renderDetailPanel: ({ row }) => ApproachDetailPanel(row, props.airports),
+    onColumnFiltersChange: setColumnFilters,
+    state: {
+        columnFilters
+    }
   });
+
+  // Callback for when filtering changes.
+  useEffect(() => {
+    const filteredRows = table.getFilteredRowModel().flatRows.map(r => r.original);
+  }, [columnFilters, props.data]);
+
 
   return <MaterialReactTable table={table} />;
 }
