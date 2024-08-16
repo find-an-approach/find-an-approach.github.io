@@ -82,7 +82,13 @@ export function App() {
 
     // Check if we the airport name we have is valid.
     const airportUpper = airport.toUpperCase();
-    const airportObject = data.airports[airportUpper];
+    let airportObject = data.airports[airportUpper];
+    // See if prepending a 'K' makes it a valid airport name.
+    const airportNameWithPrependedK = 'K' + airportUpper;
+    if (!airportObject) {
+      airportObject = data.airports[airportNameWithPrependedK]
+    }
+
     if (!airportObject) {
       // Nope, just use all the data then.
       setFilteredApproaches(data.approaches);
