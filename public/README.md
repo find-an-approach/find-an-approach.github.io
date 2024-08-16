@@ -1,0 +1,1 @@
+These files get copied into dist/ as-is by vite.
