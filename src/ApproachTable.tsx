@@ -184,6 +184,7 @@ export default function ApproachTable(props: {
   data: Approach[];
   approachTypes: string[];
   airports: AirportsMap;
+  onTableFilteredDataUpdate: (data: Approach[]) => void;
 }) {
   const data = useMemo(() => props.data, [props.data]);
 
@@ -314,6 +315,7 @@ export default function ApproachTable(props: {
   // Callback for when filtering changes.
   useEffect(() => {
     const filteredRows = table.getFilteredRowModel().flatRows.map((r) => r.original);
+    props.onTableFilteredDataUpdate(filteredRows);
   }, [columnFilters, props.data]);
 
   return <MaterialReactTable table={table} />;

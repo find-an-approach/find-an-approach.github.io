@@ -133,6 +133,9 @@ export function App() {
     setAirportInputState(AirportInputState.Valid);
   }, [airport, data, filterDistance]);
 
+  // Used to store approaches filtered within the table.
+  const [tableFilteredApproaches, setTableFilteredApproaches] = useState<Approach[]>([]);
+
   const [mode, setMode] = useState<PaletteMode>(defaultTheme);
   const onDarkModeChange = () => setMode(mode == 'light' ? 'dark' : 'light');
   const theme = useMemo(
@@ -190,6 +193,7 @@ export function App() {
 
         <Grid item xs={12} xl={8} sx={{ pr: 2 }}>
           <ApproachTable 
+            onTableFilteredDataUpdate={(approaches) => setTableFilteredApproaches(approaches)}
             data={filteredApproaches}
             approachTypes={approachTypes}
             dttpCycleNumber={data.dtpp_cycle_number}
@@ -201,7 +205,7 @@ export function App() {
         filterAirport={filteredToAirport}
         filterDistance={filterDistance}
         
-        data={filteredApproaches}
+        data={tableFilteredApproaches}
         airports={data.airports}
         dttpCycleNumber={data.dtpp_cycle_number} />
       <Footer />
