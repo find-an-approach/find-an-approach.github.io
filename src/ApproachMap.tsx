@@ -25,12 +25,14 @@ export default function ApproachMap(props: {
   filterAirport: AppAirportData | null;
   filterDistance: number;
 }) {
+  // temporary hack to work around the fact that I generated for a pre-release DDTPP.
+  const dttpCycleNumber = props.dttpCycleNumber == "250320" ? "250220" : props.dttpCycleNumber;
   // vfrmap uses the full year in the cycle, so 20240711, therefore we
   // prefix a 20. Hopefully no one is using this in the year 3000 :)
   const tileUrl = useMemo(
     () =>
-      `https://vfrmap.com/20${props.dttpCycleNumber}/tiles/vfrc/{z}/{y}/{x}.jpg`,
-    [props.dttpCycleNumber],
+      `https://vfrmap.com/20${dttpCycleNumber}/tiles/vfrc/{z}/{y}/{x}.jpg`,
+    [dttpCycleNumber],
   );
 
   const [map, setMap] = useState<Map | null>(null);
